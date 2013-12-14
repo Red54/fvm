@@ -1,0 +1,1 @@
+bash ./configure --linker=ld --mingw_include_path="C:\MinGW" --mingw_lib_path="C:\MinGW\lib"

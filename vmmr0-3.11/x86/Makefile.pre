@@ -1,0 +1,9 @@
+ifeq ($(ARCH),x86_64)
+	yasm -f elf64 -o vmxhelper.o ./$(ARCH_DIR)/vmxhelper.asm -m amd64 -D CONFIG_X86_64
+else
+ifeq ($(ARCH),i386)   
+	yasm -f elf32 -o vmxhelper.o ./$(ARCH_DIR)/vmxhelper.asm -m x86 -D CONFIG_X86_32
+else
+	$(error invalid ARCH)
+endif
+endif

@@ -1,0 +1,16 @@
+export ARCH=x86_64
+export HOST=OS_WINDOWS
+PREFIX=
+KERNELDIR=/lib/modules/1.0.17(0.48/3/2)/build
+KERNELSOURCEDIR=
+KERNELVERSION=
+export LINKER=ld
+export MINGW_INCLUDE_PATH=D:\mingw64\x86_64-w64-mingw32\include\ddk
+export DDK_LIB_PATH=F:\WinDDK\7600.16385.1\lib\win7\amd64
+export MINGW_LIB_PATH=D:\mingw64\mingw\lib
+export CROSS_COMPILE=
+export CC=gcc
+export LD=ld
+export OBJCOPY=objcopy
+export AR=ar
+export MINGW_PATH=

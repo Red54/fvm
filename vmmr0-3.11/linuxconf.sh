@@ -1,0 +1,1 @@
+bash ./configure --host=linux

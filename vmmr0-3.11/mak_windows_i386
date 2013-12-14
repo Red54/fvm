@@ -1,0 +1,80 @@
+#vmmr0_makefile
+$(if $(wildcard config.mak),,$(error Please run configure first))
+include config.mak
+
+ARCH_DIR = $(if $(filter $(ARCH),x86_64 i386),x86,$(ARCH))
+ARCH_CONFIG := $(shell echo $(ARCH_DIR) | tr '[:lower:]' '[:upper:]')
+NONARCH_CONFIG = $(filter-out $(ARCH_CONFIG),X86)
+
+lib-m = seh.o
+
+src-m = ./compat-windows.c ./$(ARCH_DIR)/mmu.c ./$(ARCH_DIR)/x86.c ./$(ARCH_DIR)/coalesced_mmio.c\
+./$(ARCH_DIR)/preempt.c ./$(ARCH_DIR)/emulate.c ./$(ARCH_DIR)/async_pf.c ./$(ARCH_DIR)/irq_comm.c ./$(ARCH_DIR)/lapic.c\
+./$(ARCH_DIR)/timer.c ./$(ARCH_DIR)/eventfd.c ./$(ARCH_DIR)/assigned-dev.c ./$(ARCH_DIR)/compat-x86-win.c ./$(ARCH_DIR)/cpuid.c\
+./$(ARCH_DIR)/ioapic.c ./$(ARCH_DIR)/i8254.c ./$(ARCH_DIR)/i8259.c ./$(ARCH_DIR)/irq.c ./$(ARCH_DIR)/pmu.c\
+./$(ARCH_DIR)/svm.c ./$(ARCH_DIR)/vmx.c ./$(ARCH_DIR)/vmmr0-windows.c
+
+obj-m = $(patsubst %.c, %.o,$(src-m))
+asm-m = ./$(ARCH_DIR)/vmxhelper.o
+
+INCLUDES = -I $(MINGW_INCLUDE_PATH) -I ./include -I ./include/asm -I ./include/linux \
+			 -I ./include-compat/asm -include ./include/os_interface.h
+
+CXX_ALL = $(CC) -c $(INCLUDES)
+CXX = $(CXX_ALL) -Os
+CXX_MMU = $(CXX_ALL) -O3
+
+COMMON_DEPEND = Makefile
+
+mslink = link $(obj-m) $(asm-m) $(lib-m) /OUT:vmmr0.sys /SUBSYSTEM:NATIVE /LIBPATH:"$(DDK_LIB_PATH)" \
+	  "ntoskrnl.lib" "hal.lib" "ntdll.lib"  /MANIFESTUAC:NO \
+	 /ENTRY:"DriverEntry" /BASE:"0x10000" /MACHINE:X86
+
+ldlink = ld $(obj-m) $(lib-m) \
+	 --subsystem=native  \
+	 --entry=_DriverEntry@8 --nostdlib -L ./lib/msddklib/i386 -L "$(MINGW_LIB_PATH)" \
+	 -shared -l ntoskrnl -l ddkntoskrnl \
+	 -l hal -o vmmr0.sys
+	 
+all:: vmmr0.sys
+	
+vmmr0.sys: $(obj-m) $(asm-m)
+		
+ifeq ($(LINKER),link)
+	@echo LINK [M] `pwd`/vmmr0.sys
+	@$(mslink)
+else
+ifeq ($(LINKER),ld)
+	@echo LD [M] `pwd`/vmmr0.sys
+	@$(ldlink)
+else
+	$(error invalid linker)
+endif
+endif
+
+sinclude $(src-m:.c=.d)
+
+%.d: %.c $(COMMON_DEPEND)
+	@set -e; rm -f $@; \
+	$(CXX) -MM -MT $*.o $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	rm -f $@.$$$$
+	
+./$(ARCH_DIR)/vmxhelper.o: $(COMMON_DEPEND) ./$(ARCH_DIR)/vmxhelper.asm
+	@echo ASM [M] `pwd`/$(ARCH_DIR)/vmxhelper.o
+	@yasm -f win64 -o ./$(ARCH_DIR)/vmxhelper.o ./$(ARCH_DIR)/vmxhelper.asm -m amd64 -D CONFIG_X86_64
+
+./$(ARCH_DIR)/mmu.o : ./$(ARCH_DIR)/mmu.d $(COMMON_DEPEND)
+	@echo CC [M] `pwd`/$@
+	@$(CXX_MMU) ./$*.c -o ./$@
+	
+%.o: %.d $(COMMON_DEPEND)
+	@echo CC [M] `pwd`/$@
+	@$(CXX) ./$*.c -o ./$@
+	
+clean:
+	rm -f $(obj-m) $(asm-m) *.obj *.exe *.sys *.ko *.d
+	cd $(ARCH_DIR) && rm -f *.o *.obj *.exe *.sys *.ko *.d
+	
+	
+.PHONY: all clean

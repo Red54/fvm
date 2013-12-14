@@ -1,0 +1,57 @@
+trap-crasher.o: trap-crasher.c \
+ f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/stdlib.h \
+ f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/_mingw.h \
+ f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/_mingw_mac.h \
+ f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/vadefs.h \
+ f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/sdks/_mingw_directx.h \
+ f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/sdks/_mingw_ddk.h \
+ f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/include-fixed/limits.h \
+ f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/include-fixed/syslimits.h \
+ f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/limits.h \
+ f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/sec_api/stdlib_s.h \
+ f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/malloc.h \
+ ../pixman/pixman.h ../pixman/pixman-version.h \
+ F:\mingw64\lib\gcc\x86_64-w64-mingw32\4.6.3\include/stdint.h \
+ f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/include/stdint.h \
+ f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/stdint.h \
+ F:\mingw64\lib\gcc\x86_64-w64-mingw32\4.6.3\include/stddef.h \
+ f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/include/stddef.h \
+ f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/stddef.h
+
+f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/stdlib.h:
+
+f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/_mingw.h:
+
+f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/_mingw_mac.h:
+
+f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/vadefs.h:
+
+f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/sdks/_mingw_directx.h:
+
+f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/sdks/_mingw_ddk.h:
+
+f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/include-fixed/limits.h:
+
+f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/include-fixed/syslimits.h:
+
+f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/limits.h:
+
+f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/sec_api/stdlib_s.h:
+
+f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/malloc.h:
+
+../pixman/pixman.h:
+
+../pixman/pixman-version.h:
+
+F:\mingw64\lib\gcc\x86_64-w64-mingw32\4.6.3\include/stdint.h:
+
+f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/include/stdint.h:
+
+f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/stdint.h:
+
+F:\mingw64\lib\gcc\x86_64-w64-mingw32\4.6.3\include/stddef.h:
+
+f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/include/stddef.h:
+
+f:\mingw64\bin\../lib/gcc/x86_64-w64-mingw32/4.7.0/../../../../x86_64-w64-mingw32/include/stddef.h:

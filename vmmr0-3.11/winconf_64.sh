@@ -1,0 +1,1 @@
+bash ./configure --linker=ld --ddk_lib_path="F:\WinDDK\7600.16385.1\lib\win7\amd64" --mingw_lib_path="D:\mingw64\mingw\lib" --mingw_include_path="D:\mingw64\x86_64-w64-mingw32\include\ddk"

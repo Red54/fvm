@@ -1,0 +1,13 @@
+obj-m := vmmr0.o
+vmmr0-y := vmxhelper.o
+vmmr0-objs := vmmr0-linux.o x86.o vmx.o svm.o mmu.o emulate.o irq.o i8259.o pmu.o preempt.o  \
+	 lapic.o ioapic.o i8254.o coalesced_mmio.o irq_comm.o \
+	 timer.o eventfd.o assigned-dev.o compat-x86.o async_pf.o cpuid.o \
+	 ../external-module-compat.o
+ifeq ($(CONFIG_IOMMU_API),y)
+vmmr0-objs += iommu.o
+endif
+
+vmmr0-objs += ../srcu.o
+
+
