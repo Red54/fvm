@@ -1,37 +1,37 @@
 fvm (cross-platform kvm)
 ===
 
-Fvm is a cross-platform kvm, it support Windows & Linux host so far.
+Fvm is a cross-platform kvm, it supports Windows & Linux host so far.
 	qemu-fvm is a customized version of qemu, like qemu-kvm.
 	vmmr0 is a kernel module (driver) to accelerate qemu.
 
 How to Build :
 	On Linux Host, build it like kvm.
 	On Windows Host (only support windows kernel version > 7600, amd64 architecture):
-		Build qemu-fvm :
-			1. checkout source code.
-			2. modify winconf_64.sh :
-				modify this config
-					--extra-cflags="-I /(path to qemu-fvm)/linux-headers"
-					eg : --extra-cflags="-I /e/mingwbuild/qemu-fvm-1.3.1/linux-headers"
-			3. download a mingw-w64 env (there is a mingw-w64 with gcc 4.7 is my github).
-			4. in mingw shell, execute:
-				sh winconf_64.sh
-				make
-		Build vmmr0 :
-			1. checkout source code.
-			2. modify winconf_64.sh :
-				modify these configs
-					--mingw_lib_path="(path to mingw64)\mingw\lib" 
-					--mingw_include_path="(path to mingw64)\x86_64-w64-mingw32\include\ddk"
-					eg : 
-						--mingw_lib_path="D:\mingw64\mingw\lib" 
-						--mingw_include_path="D:\mingw64\x86_64-w64-mingw32\include\ddk"
-			3. download a mingw-w64 env with gcc 4.8(there is a mingw-w64 with gcc 4.8 is my github).
-				!!! mingw gcc 4.7 cannot compile vmmr0 perfectly, please use mingw gcc 4.8.
-			4. in mingw shell, execute:
-				sh winconf_64.sh
-				make
+	1.Build qemu-fvm :
+		1. checkout source code.
+		2. modify winconf_64.sh :
+			modify this config
+				--extra-cflags="-I /(path to qemu-fvm)/linux-headers"
+				eg : --extra-cflags="-I /e/mingwbuild/qemu-fvm-1.3.1/linux-headers"
+		3. download a mingw-w64 env (there is a mingw-w64 with gcc 4.7 is my github).
+		4. in mingw shell, execute:
+			sh winconf_64.sh
+			make
+	2.Build vmmr0 :
+		1. checkout source code.
+		2. modify winconf_64.sh :
+			modify these configs
+				--mingw_lib_path="(path to mingw64)\mingw\lib" 
+				--mingw_include_path="(path to mingw64)\x86_64-w64-mingw32\include\ddk"
+				eg : 
+					--mingw_lib_path="D:\mingw64\mingw\lib" 
+					--mingw_include_path="D:\mingw64\x86_64-w64-mingw32\include\ddk"
+		3. download a mingw-w64 env with gcc 4.8(there is a mingw-w64 with gcc 4.8 is my github).
+			!!! mingw gcc 4.7 cannot compile vmmr0 perfectly, please use mingw gcc 4.8.
+		4. in mingw shell, execute:
+			sh winconf_64.sh
+			make
 
 
 How To Use :
