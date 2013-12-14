@@ -52,7 +52,7 @@ usage() {
             set mingw library path when build for windows
 			
 	    --help                   					
-            �㶮��  U Know
+            你懂的  U Know
 EOF
     exit 1
 }
