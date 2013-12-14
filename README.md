@@ -20,7 +20,7 @@ How to Build :
 			modify this config
 				--extra-cflags="-I /(path to qemu-fvm)/linux-headers"
 				eg : --extra-cflags="-I /e/mingwbuild/qemu-fvm-1.3.1/linux-headers"
-		3) download a mingw-w64 env (there is a mingw-w64 with gcc 4.7 on my github).
+		3) download a mingw-w64 env (there is a mingw-w64 with gcc 4.7 in this repostory).
 		4) in mingw shell, execute:
 			sh winconf_64.sh
 			make
@@ -33,7 +33,7 @@ How to Build :
 				eg : 
 					--mingw_lib_path="D:\mingw64\mingw\lib" 
 					--mingw_include_path="D:\mingw64\x86_64-w64-mingw32\include\ddk"
-		3) download a mingw-w64 env with gcc 4.8(there is a mingw-w64 with gcc 4.8 on my github).
+		3) download a mingw-w64 env with gcc 4.8(there is a mingw-w64 with gcc 4.8 in this repostory).
 			!!! mingw gcc 4.7 cannot compile vmmr0 perfectly, please use mingw gcc 4.8.
 		4) in mingw shell, execute:
 			sh winconf_64.sh
