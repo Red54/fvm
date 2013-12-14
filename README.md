@@ -2,12 +2,18 @@ fvm (cross-platform kvm)
 ===
 
 Fvm is a cross-platform kvm, it supports Windows & Linux host so far.
+
 	qemu-fvm is a customized version of qemu, like qemu-kvm.
+	
 	vmmr0 is a kernel module (driver) to accelerate qemu.
 
 How to Build :
-	On Linux Host, build it like kvm;
+
+	On Linux Host, build it like kvm.
+	
 	On Windows Host (only support windows kernel version > 7600, amd64 architecture):
+	
+	
 	1. Build qemu-fvm :
 		1) checkout source code.
 		2) modify winconf_64.sh :
@@ -35,7 +41,9 @@ How to Build :
 
 
 How To Use :
+
 	To use fvm for linux, please checkout the code and compile fvm.
+	
 	To use fvm for windows, we should follow these steps:
 	
 	You should have a computer installed 64-bit windows 7 or higher.
