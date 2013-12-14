@@ -6,9 +6,9 @@ Fvm is a cross-platform kvm, it supports Windows & Linux host so far.
 	vmmr0 is a kernel module (driver) to accelerate qemu.
 
 How to Build :
-	On Linux Host, build it like kvm.
+	On Linux Host, build it like kvm;
 	On Windows Host (only support windows kernel version > 7600, amd64 architecture):
-	1.Build qemu-fvm :
+	1. Build qemu-fvm :
 		1. checkout source code.
 		2. modify winconf_64.sh :
 			modify this config
@@ -18,7 +18,7 @@ How to Build :
 		4. in mingw shell, execute:
 			sh winconf_64.sh
 			make
-	2.Build vmmr0 :
+	2. Build vmmr0 :
 		1. checkout source code.
 		2. modify winconf_64.sh :
 			modify these configs
@@ -44,13 +44,13 @@ How To Use :
 		http://msdn.microsoft.com/en-us/library/ms190730.aspx
 		fvm use awe memory in order to lock guest 's page. Windows kernel do not have anything like mmu_notifier    :(     
 	
-	2.windows x64 needs driver signing, so enable testmode.
+	2. windows x64 needs driver signing, so enable testmode.
 	
 		bcdedit -set testsigning on
 	
-	3.reboot your computer.
+	3. reboot your computer.
 	
-	4.install the vmmr0.sys kernel module as service named 'vmmr0' and start it.
+	4. install the vmmr0.sys kernel module as service named 'vmmr0' and start it.
 	
 		execute in cmd:
 	
