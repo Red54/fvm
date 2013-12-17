@@ -109,27 +109,27 @@ then
 	if uname | grep -i linux > /dev/null
 	then
 		echo "configuring for linux environment..."
-    	host_os='OS_LINUX'
+    	host_os='HOST_LINUX'
 	fi
 	if uname | grep -i mingw > /dev/null
 	then
 		echo "configuring for MINGW environment..."
-    	host_os='OS_WINDOWS'
+    	host_os='HOST_WINDOWS'
 	fi
 	if [ "$host_os" == "" ]
 	then
 		echo "host os is not defined, default to linux"
-    	host_os='OS_LINUX'
+    	host_os='HOST_LINUX'
     fi
 else
 	case $host_os in
 		"linux")
 		echo "configuring for linux environment..."
-		host_os='OS_LINUX'
+		host_os='HOST_LINUX'
 		;;
 		"windows")
 		echo "configuring for MINGW environment..."
-		host_os='OS_WINDOWS'
+		host_os='HOST_WINDOWS'
 		;;
 		*)
 		echo "invalid host os(valid: linux|windows)"
@@ -298,10 +298,10 @@ cp -f ./mak_windows_"$arch" Makefile
 }
 
 case $host_os in
-	"OS_LINUX")
+	"HOST_LINUX")
 	do_linux_configure
 	;;
-	"OS_WINDOWS")
+	"HOST_WINDOWS")
 	do_windows_configure
 	;;
 	*)
@@ -334,13 +334,13 @@ cat <<EOF > vmmr0-config.h
 #define KERNEL_EXTRAVERSION $kernel_extraversion
 $config_fedora_kernel
 #define $host_os
-#ifdef OS_LINUX
+#ifdef HOST_LINUX
 #define HOST_LONG_SIZE 8
 #else
-#ifdef OS_WINDOWS
+#ifdef HOST_WINDOWS
 #define HOST_LONG_SIZE 4
-#endif //OS_WINDOWS
-#endif //OS_LINUX
+#endif //HOST_WINDOWS
+#endif //HOST_LINUX
 #ifndef HOST_LONG_SIZE
 #error "HOST_LONG_SIZE undefined!"
 #endif
