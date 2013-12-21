@@ -1138,9 +1138,13 @@ ram_addr_t qemu_ram_alloc_from_ptr(ram_addr_t size, void *host,
             new_block->host = file_ram_alloc(new_block, size, mem_path);
         }
         if (!new_block->host) {
+#ifdef CONFIG_KVM
 			if (kvm_enabled()) {
                 new_block->host = kvm_ram_alloc(size);
-            } else {
+            } 
+			else 
+#endif
+			{
                 new_block->host = phys_mem_alloc(size);
             }
             if (!new_block->host) {
@@ -1229,7 +1233,15 @@ void qemu_ram_free(ram_addr_t addr)
                 close(block->fd);
 #endif
             } else {
-                qemu_anon_ram_free(block->host, block->length);
+#ifdef CONFIG_KVM
+				if (kvm_enabled()) {
+					kvm_ram_free(block->host, block->length);
+				} 
+				else 
+#endif			
+				{
+					qemu_anon_ram_free(block->host, block->length);
+				}
             }
             g_free(block);
             break;

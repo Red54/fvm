@@ -1846,7 +1846,7 @@ int kvm_has_intx_set_mask(void)
     return kvm_state->intx_set_mask;
 }
 
-void *kvm_ram_alloc(ram_addr_t size)
+void *kvm_ram_alloc(size_t size)
 {
 #ifdef CONFIG_WIN32
     return vmmr3_alloc_kmem(size);
@@ -1855,12 +1855,12 @@ void *kvm_ram_alloc(ram_addr_t size)
 #endif
 }
 
-void kvm_ram_free(void* ptr)
+void kvm_ram_free(void* ptr, size_t size)
 {
 #ifdef CONFIG_WIN32
     vmmr3_free_kmem(ptr);
 #else
-    qemu_anon_ram_free(ptr);
+    qemu_anon_ram_free(ptr, size);
 #endif
 }
 
