@@ -836,6 +836,7 @@ struct vmmr0_one_reg
 #define KVM_ALLOC_KMEM		  				_IOWR(KVMIO,  0x7bf, __u64)
 #define KVM_FREE_KMEM		  				_IOWR(KVMIO,  0x7c0, __u64)
 #define KVM_BIND_EVENT            			_IOWR(KVMIO,  0x7c2, __u64)
+#define KVM_GET_KVM_COALESCED_MMIO          _IOWR(KVMIO,  0x7c3, __u64)
 
 #define KVM_DEV_ASSIGN_ENABLE_IOMMU	(1 << 0)
 #define KVM_DEV_ASSIGN_PCI_2_3		(1 << 1)

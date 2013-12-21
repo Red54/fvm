@@ -205,7 +205,7 @@ int vmmr0_vcpu_init(struct vmmr0_vcpu *vcpu, struct vm *pvm, unsigned id)
 	vcpu->vcpu_id = id;
 	vmmr0_async_pf_vcpu_init(vcpu);
 
-	vcpu->run = kzalloc(256 * PAGE_SIZE, GFP_KERNEL);
+	vcpu->run = kzalloc(7 * PAGE_SIZE, GFP_KERNEL);
 
 	r = vmmr0_arch_vcpu_init(vcpu);
 	if (r < 0)
@@ -2613,23 +2613,19 @@ static int vmmr0_add_vmem_list(PMDL pmdl, int type)
 	return r;
 }
 
-static unsigned long map_vmmr0_run(struct vmmr0_vcpu* vcpu)
+static unsigned long vmmr0_map_pages(void* addr, unsigned long size)
 {
-	// map 256 pages.assume ring3 wont do any bad thing.
 	PMDL pmdl = 0;
 	PVOID user_va = 0;
 	struct vmem_list* vmem_list;
-	if(!vcpu->run)
-	{
-		goto out_error;
-	}
-	pmdl = IoAllocateMdl(vcpu->run, 256 * PAGE_SIZE, 0, 0, 0);
+
+	pmdl = IoAllocateMdl(addr, size, 0, 0, 0);
 	if(!pmdl)
 	{
 		goto out_error;
 	}
 	MmBuildMdlForNonPagedPool(pmdl);
-	user_va = MmMapLockedPagesSpecifyCache(pmdl,UserMode,MmNonCached,0,0,NormalPagePriority);
+	user_va = MmMapLockedPagesSpecifyCache(pmdl, UserMode, MmNonCached, 0, 0, NormalPagePriority);
 	if(!user_va)
 	{
 		goto out_free_mdl;
@@ -2645,6 +2641,16 @@ static unsigned long map_vmmr0_run(struct vmmr0_vcpu* vcpu)
 	out_error:
 	user_va = 0;
 	return (unsigned long)user_va;
+}
+
+static unsigned long map_vmmr0_run(struct vmmr0_vcpu* vcpu)
+{
+	return vmmr0_map_pages(vcpu->run, 7 * PAGE_SIZE);
+}
+
+static unsigned long map_vmmr0_coalesced_mmio(struct vmmr0_vcpu* vcpu)
+{
+	return vmmr0_map_pages(vcpu->pvm->coalesced_mmio_ring, PAGE_SIZE);
 }
 
 static int vmmr0_lock_user_pages(PVOID addr, ULONG length)
@@ -2979,6 +2985,20 @@ NTSTATUS __stdcall vmmr0_dispatch_ioctl(PDEVICE_OBJECT pDevObj, PIRP pIrp)
 		if(file.private_data)
 		{
 			*(unsigned long* )OutputBuffer = map_vmmr0_run((struct vmmr0_vcpu*)file.private_data);
+			*(unsigned long* )InputBuffer = *(unsigned long* )OutputBuffer;
+			goto out;
+		}
+		else
+		{
+			printk("vmmr0: fatal: vcpufd_to_vcpu return 0, ioctl code = %x\n", uIoControlCode);
+			r = -1;
+		}
+		break;
+	case KVM_GET_KVM_COALESCED_MMIO:
+		file.private_data = vcpufd_to_vcpu(argp->fd);
+		if(file.private_data)
+		{
+			*(unsigned long* )OutputBuffer = map_vmmr0_coalesced_mmio((struct vmmr0_vcpu*)file.private_data);
 			*(unsigned long* )InputBuffer = *(unsigned long* )OutputBuffer;
 			goto out;
 		}

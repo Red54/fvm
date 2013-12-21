@@ -247,8 +247,7 @@ int kvm_init_vcpu(CPUArchState *env)
     }
 
     if (s->coalesced_mmio && !s->coalesced_mmio_ring) {
-        s->coalesced_mmio_ring =
-            (void *)env->kvm_run + s->coalesced_mmio * PAGE_SIZE;
+		s->coalesced_mmio_ring = vmmr3_get_coalesced_mmio(s, env->kvm_fd, env->kvm_run);
     }
 
     ret = kvm_arch_init_vcpu(env);

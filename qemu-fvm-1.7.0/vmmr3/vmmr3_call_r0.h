@@ -57,6 +57,11 @@ static inline struct kvm_run* vmmr3_get_vmmr0_run(KVMState *s, int kvm_fd)
 	return kvm_run;
 }
 
+static inline void* vmmr3_get_coalesced_mmio(KVMState *s, int kvm_fd, void* run)
+{
+	return run + s->coalesced_mmio * PAGE_SIZE;
+}
+
 #elif defined(CONFIG_WIN32)
 
 #define VMMModuleName 			"\\\\.\\vmmr0"
@@ -149,6 +154,20 @@ static inline struct kvm_run* vmmr3_get_vmmr0_run(KVMState *s, int kvm_fd)
 	arg.fd = kvm_fd;
 	arg.arg = 0;
 	if(!DeviceIoControl(vmmr0_handle,KVM_GET_KVM_RUN,&arg,sizeof(arg),&kvm_run,sizeof(kvm_run),&returned,NULL))
+	{
+		return 0;
+	}
+	return kvm_run;
+}
+
+static inline void* vmmr3_get_coalesced_mmio(KVMState *s, int kvm_fd, void* run)
+{
+	ULONG returned;
+	struct kvm_run* kvm_run = 0;
+	struct ioctl_arg arg;
+	arg.fd = kvm_fd;
+	arg.arg = 0;
+	if(!DeviceIoControl(vmmr0_handle,KVM_GET_KVM_COALESCED_MMIO,&arg,sizeof(arg),&kvm_run,sizeof(kvm_run),&returned,NULL))
 	{
 		return 0;
 	}
