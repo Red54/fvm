@@ -2255,7 +2255,7 @@ static inline void vmmr0_init_work(struct work_struct* work, work_func_t fn)
 static inline bool queue_work(struct workqueue_struct *wq, struct work_struct *work)
 {
 	work->canceled = 0;
-	ExQueueWorkItem(&work->wqi, CriticalWorkQueue);
+	ExQueueWorkItem(&work->wqi, DelayedWorkQueue);
 	return true;
 }
 
