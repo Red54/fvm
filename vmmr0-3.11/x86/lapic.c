@@ -750,7 +750,9 @@ static void start_apic_timer(struct vmmr0_lapic *apic)
 		if (unlikely(!tscdeadline || !this_tsc_khz))
 			return;
 
+#ifdef HOST_LINUX
 		local_irq_save(flags);
+#endif
 
 		now = apic->lapic_timer.timer.base->get_time();
 		guest_tsc = vmmr0_x86_ops->read_l1_tsc(vcpu);
@@ -761,7 +763,9 @@ static void start_apic_timer(struct vmmr0_lapic *apic)
 		hrtimer_start(&apic->lapic_timer.timer,
 			ktime_add_ns(now, ns), HRTIMER_MODE_ABS);
 
+#ifdef HOST_LINUX
 		local_irq_restore(flags);
+#endif
 	}
 }
 

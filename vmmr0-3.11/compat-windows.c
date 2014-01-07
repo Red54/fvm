@@ -81,6 +81,11 @@ ULONG_PTR NTAPI smp_function_caller(IN ULONG_PTR p)
 	return (ULONG_PTR)0;
 }
 
+ULONG_PTR NTAPI vcpu_kick_intr(IN ULONG_PTR p)
+{
+	return (ULONG_PTR)0;
+}
+
 int vmmr0_smp_call_function_single(int cpu, void (*func)(void *info),
 				 void *info, int wait)
 {
@@ -121,9 +126,6 @@ int vmmr0_smp_call_function_single(int cpu, void (*func)(void *info),
 
 unsigned int get_processor_num(void)
 {
-/*	SYSTEM_INFO info;
-	GetSystemInfo(&info);
-	return info.dwNumberOfProcessors;*/
 #ifdef CONFIG_X86_64
 	return KeQueryActiveProcessorCount(0);
 #else
@@ -228,13 +230,10 @@ out:
 	return 0;
 }
 
-static void vcpu_kick_intr(void *info)
-{
-}
-
 void vmmr0_smp_send_reschedule(int cpu)
 {
-	smp_call_function_single(cpu, vcpu_kick_intr, NULL, 0);
+	//too expensive, hack it?
+	KeIpiGenericCall(vcpu_kick_intr, (ULONG_PTR)NULL);
 }
 
 
@@ -676,12 +675,38 @@ int vmmr0_hrtimer_restart(struct hrtimer* timer)
 	return r;
 }
 
-void vmmr0_work_routine(void* arg)
+static void process_one_work(struct workqueue_struct *wq, struct work_struct *work)
 {
-	struct work_struct* ws = (struct work_struct*)arg;
-	if(!ws->canceled)
+	HANDLE h;
+	list_del_init(&work->entry);
+	
+	work_func_t f = work->func;
+	f(work);
+	work->wq = 0;
+}
+
+void vmmr0_workqueue_thread_fn(void* p)
+{
+	struct workqueue_struct* wq = (struct workqueue_struct *)p;
+	struct work_struct *work = 0;
+	
+	while (!wq->exit_request)
 	{
-		ws->func(ws);
+		KeWaitForSingleObject(&wq->do_work_pending, Executive, KernelMode, FALSE, NULL);
+		spin_lock(&wq->work_lock);
+		
+		while (!list_empty(&wq->work_list))
+		{
+			if (wq->modify_work_pending)
+			{
+				break;
+			}
+			work = list_first_entry(&wq->work_list,
+						struct work_struct, entry);
+			process_one_work(wq, work);
+		}
+		spin_unlock(&wq->work_lock);
 	}
-	vmmr0_destroy_work(ws);
+	KeSetEvent(&wq->can_exit, IO_NO_INCREMENT, FALSE);
+	PsTerminateSystemThread(STATUS_SUCCESS);
 }

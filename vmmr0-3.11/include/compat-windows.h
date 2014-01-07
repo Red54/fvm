@@ -2225,19 +2225,24 @@ static inline ktime_t hrtimer_get_remaining(const struct hrtimer *timer)
 struct work_struct;
 
 typedef void (*work_func_t)(struct work_struct *work);
-void vmmr0_work_routine(void* arg);
 
 struct workqueue_struct 
 {
-	u32 dummy;
+	HANDLE thread_handle;
+	struct list_head work_list;
+	u64 exit_request;
+	u64 modify_work_pending;
+	KEVENT can_exit;
+	KEVENT do_work_pending;
+	spinlock_t work_lock;
+	spinlock_t modify_list_lock;
 };
 
 struct work_struct 
 {
 	struct list_head entry;
 	work_func_t func;
-	u32 canceled;
-	WORK_QUEUE_ITEM wqi;
+	struct workqueue_struct* wq;
 };
 
 #define INIT_WORK(_work, _func)						\
@@ -2247,41 +2252,102 @@ struct work_struct
 
 static inline void vmmr0_init_work(struct work_struct* work, work_func_t fn)
 {
-	ExInitializeWorkItem(&work->wqi, vmmr0_work_routine, work);
-	work->canceled = 0;
+	work->wq = 0;
 	work->func = fn;
 }
 
 static inline bool queue_work(struct workqueue_struct *wq, struct work_struct *work)
 {
-	work->canceled = 0;
-	ExQueueWorkItem(&work->wqi, DelayedWorkQueue);
+	if(!wq)
+	{
+		return false;
+	}
+	if (work->wq)
+	{
+		return false;
+	}
+	spin_lock(&wq->modify_list_lock);
+	wq->modify_work_pending = 1;
+	spin_lock(&wq->work_lock);
+	work->wq = wq;
+	list_add_tail(&work->entry, &wq->work_list);
+	wq->modify_work_pending = 0;
+	spin_unlock(&wq->work_lock);
+	KeSetEvent(&wq->do_work_pending, IO_NO_INCREMENT, FALSE);
+	spin_unlock(&wq->modify_list_lock);
 	return true;
 }
 
 static inline bool cancel_work_sync(struct work_struct *work)
 {
-	if(work)
+	struct workqueue_struct *wq = work->wq;
+	if(!work)
 	{
-		work->canceled = 1;
+		return false;
 	}
+	if(!wq)
+	{
+		return false;
+	}
+	spin_lock(&wq->modify_list_lock);
+	wq->modify_work_pending = 1;
+	spin_lock(&wq->work_lock);
+	work->wq = 0;
+	list_del_init(&work->entry);
+	wq->modify_work_pending = 0;
+	spin_unlock(&wq->work_lock);
+	KeSetEvent(&wq->do_work_pending, IO_NO_INCREMENT, FALSE);
+	spin_unlock(&wq->modify_list_lock);
 	return true;
 }
 
-static inline void vmmr0_destroy_work(struct work_struct* work)
-{
-}
+void vmmr0_workqueue_thread_fn(void* p);
 
 static inline struct workqueue_struct* create_singlethread_workqueue(const char* name)
 {
-	struct workqueue_struct* ws = ExAllocatePool(NonPagedPool, sizeof(struct workqueue_struct));
-	return ws;
+	NTSTATUS status;
+	struct workqueue_struct* wq = ExAllocatePool(NonPagedPool, sizeof(struct workqueue_struct));
+	if (!wq)
+	{
+		goto out_error;
+	}
+	
+	spin_lock_init(&wq->work_lock);
+	spin_lock_init(&wq->modify_list_lock);
+	KeInitializeEvent(&wq->can_exit, SynchronizationEvent, FALSE);
+	KeInitializeEvent(&wq->do_work_pending, SynchronizationEvent, FALSE);
+	wq->exit_request = 0;
+	wq->modify_work_pending = 0;
+	INIT_LIST_HEAD(&wq->work_list);
+	
+	status = PsCreateSystemThread(&wq->thread_handle, 
+		(ACCESS_MASK)THREAD_ALL_ACCESS, 
+		NULL, NULL, NULL, 
+		(PKSTART_ROUTINE)vmmr0_workqueue_thread_fn, wq);
+	
+	if (status != STATUS_SUCCESS) {
+		goto out_free;
+	}
+	
+	return wq;
+	
+	out_free:
+	ExFreePool(wq);
+	out_error:
+	return 0;
 }
 
 static inline void destroy_workqueue(struct workqueue_struct *wq)
 {
-	if(wq)
+	if(!wq)
 	{
-		ExFreePool(wq);
+		return;
 	}
+	
+	wq->exit_request = 1;
+	
+	KeSetEvent(&wq->do_work_pending, IO_NO_INCREMENT, FALSE);
+	KeWaitForSingleObject(&wq->can_exit, Executive, KernelMode, FALSE, NULL);
+	
+	ExFreePool(wq);
 }
