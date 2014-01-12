@@ -1259,6 +1259,8 @@ void mark_page_dirty(struct vm *pvm, gfn_t gfn)
 static void hardware_enable_nolock(void *junk);
 static void hardware_disable_nolock(void *junk);
 
+#pragma GCC push_options
+#pragma GCC optimize ("O2")
 /*
  * The vCPU has executed a HLT instruction with in-kernel mode enabled.
  */
@@ -1302,6 +1304,8 @@ int vmmr0_vcpu_block(struct vmmr0_vcpu *vcpu)
 	vcpu->blocked = 0;
 	return 0;
 }
+
+#pragma GCC pop_options
 
 void vmmr0_vcpu_on_spin(struct vmmr0_vcpu *me)
 {
