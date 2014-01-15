@@ -23,7 +23,7 @@
 
 #include <string.h>
 #include <assert.h>
-#include "qemu/bswap.h"
+#include "qemu-common.h"
 
 #define BIOS_LINKER_LOADER_FILESZ FW_CFG_MAX_FILE_PATH
 

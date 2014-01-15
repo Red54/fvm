@@ -28,7 +28,7 @@
 
 #include <sys/types.h>
 #include <string.h>
-#include "qemu/bswap.h"
+#include "qemu-common.h"
 #include "qemu/iov.h"
 
 #define ETH_ALEN 6

@@ -3672,16 +3672,12 @@ static void write_protect_slot(struct vm *pvm,
 	if (nr_dirty_pages < pvm->arch.n_used_mmu_pages)
 	{
 		unsigned long gfn_offset;
-
-#ifdef HOST_WINDOWS
-#else
 		for_each_set_bit(gfn_offset, dirty_bitmap, memslot->npages)
 		{
 			unsigned long gfn = memslot->base_gfn + gfn_offset;
 
 			vmmr0_mmu_rmap_write_protect(pvm, gfn, memslot);
 		}
-#endif
 		vmmr0_flush_remote_tlbs(pvm);
 	}
 	else

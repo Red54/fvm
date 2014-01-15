@@ -410,7 +410,7 @@ static inline void stfq_be_p(void *ptr, float64 v)
     stq_be_p(ptr, u.ll);
 }
 
-static inline unsigned long leul_to_cpu(unsigned long v)
+static inline lpul leul_to_cpu(lpul v)
 {
     /* In order to break an include loop between here and
        qemu-common.h, don't rely on HOST_LONG_BITS.  */
