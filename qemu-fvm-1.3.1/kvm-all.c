@@ -357,13 +357,13 @@ static int kvm_set_migration_log(int enable)
 
 /* get kvm's dirty pages bitmap and update qemu's */
 static int kvm_get_dirty_pages_log_range(MemoryRegionSection *section,
-                                         unsigned long *bitmap)
+                                         lpul *bitmap)
 {
     unsigned int i, j;
-    unsigned long page_number, c;
+    lpul page_number, c;
     hwaddr addr, addr1;
     unsigned int len = ((section->size / getpagesize()) + HOST_LONG_BITS - 1) / HOST_LONG_BITS;
-    unsigned long hpratio = getpagesize() / TARGET_PAGE_SIZE;
+    lpul hpratio = getpagesize() / TARGET_PAGE_SIZE;
 
     /*
      * bitmap-traveling is faster than memory-traveling (for addr...)
@@ -374,7 +374,7 @@ static int kvm_get_dirty_pages_log_range(MemoryRegionSection *section,
             c = leul_to_cpu(bitmap[i]);
             do {
                 j = ffsl(c) - 1;
-                c &= ~(1ul << j);
+                c &= ~(LPUL(1) << j);
                 page_number = (i * HOST_LONG_BITS + j) * hpratio;
                 addr1 = page_number * TARGET_PAGE_SIZE;
                 addr = section->offset_within_region + addr1;

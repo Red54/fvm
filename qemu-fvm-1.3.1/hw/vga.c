@@ -1906,9 +1906,7 @@ static void vga_update_display(void *opaque)
             s->cursor_blink_time = qemu_get_clock_ms(vm_clock);
             full_update = 1;
         }
-#ifdef _WIN32
-	full_update = 1;   //bug?
-#endif
+
         switch(graphic_mode) {
         case GMODE_TEXT:
             vga_draw_text(s, full_update);

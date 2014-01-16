@@ -26,6 +26,11 @@
 #ifndef QEMU_OS_POSIX_H
 #define QEMU_OS_POSIX_H
 
+typedef unsigned long lpul;
+typedef long lpl;
+#define LPUL(x) x##ul
+#define LPL(x) x##l
+
 void os_set_line_buffering(void);
 void os_set_proc_name(const char *s);
 void os_setup_signal_handling(void);
