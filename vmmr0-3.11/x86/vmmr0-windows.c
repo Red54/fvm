@@ -1259,13 +1259,12 @@ void mark_page_dirty(struct vm *pvm, gfn_t gfn)
 static void hardware_enable_nolock(void *junk);
 static void hardware_disable_nolock(void *junk);
 
-#pragma GCC push_options
-#pragma GCC optimize ("O2")
 /*
  * The vCPU has executed a HLT instruction with in-kernel mode enabled.
  */
 int vmmr0_vcpu_block(struct vmmr0_vcpu *vcpu)
 {
+	int cpu;
 	KIRQL irql;
 	LARGE_INTEGER expire;
 	expire.QuadPart = -1000000ULL;
@@ -1285,7 +1284,7 @@ int vmmr0_vcpu_block(struct vmmr0_vcpu *vcpu)
 		{
 			break;
 		}
-		vcpu_put(vcpu);
+		vmmr0_arch_vcpu_put(vcpu);
 		hardware_disable_nolock(0);
 		mutex_unlock(&__get_cpu_var(vmm_lock));
 		KeRevertToUserAffinityThreadEx(__get_cpu_var(old_affinity));
@@ -1294,18 +1293,17 @@ int vmmr0_vcpu_block(struct vmmr0_vcpu *vcpu)
 			vcpu->run->exit_request = 1;
 		}
 		KeRaiseIrql(DISPATCH_LEVEL, &irql);
-		__get_cpu_var(new_affinity) = 1 << smp_processor_id();
+		cpu = smp_processor_id();
+		__get_cpu_var(new_affinity) = 1 << cpu;
 		__get_cpu_var(old_affinity) = KeSetSystemAffinityThreadEx(__get_cpu_var(new_affinity));
 		KeLowerIrql(PASSIVE_LEVEL);
 		mutex_lock(&__get_cpu_var(vmm_lock));
 		hardware_enable_nolock(0);
-		vcpu_load(vcpu);
+		vmmr0_arch_vcpu_load(vcpu, cpu);
 	}
 	vcpu->blocked = 0;
 	return 0;
 }
-
-#pragma GCC pop_options
 
 void vmmr0_vcpu_on_spin(struct vmmr0_vcpu *me)
 {
