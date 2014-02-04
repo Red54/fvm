@@ -119,21 +119,10 @@ static inline u64 native_read_msr_safe(unsigned int msr,
 
 	if(call_seh(fn, &srm))
 	{
-		printk("vmmr0: native_read_msr_safe: read msr %x failed\n", msr);
+		pr_warn_ratelimited("vmmr0: native_read_msr_safe: read msr %x failed\n", msr);
 		*err = -EIO;
 	}
 	return ret;
-/*	DECLARE_ARGS(val, low, high);
-
-	asm volatile("2: rdmsr ; xor %[err],%[err]\n"
-		     "1:\n\t"
-		     //".section .fixup,\"ax\"\n\t"
-		     "3:  mov %[fault],%[err] ; jmp 1b\n\t"
-		     //".previous\n\t"
-		     //_ASM_EXTABLE(2b, 3b)
-		     : [err] "=r" (*err), EAX_EDX_RET(val, low, high)
-		     : "c" (msr), [fault] "i" (-EIO));
-	return EAX_EDX_VAL(val, low, high);*/
 }
 
 /* Can be uninlined because referenced by paravirt */
@@ -151,22 +140,10 @@ static inline int native_write_msr_safe(unsigned int msr,
 
 	if(call_seh(fn, &swm))
 	{
-		printk("vmmr0: native_write_msr_safe: write msr %x failed\n", msr);
+		pr_warn_ratelimited("vmmr0: native_write_msr_safe: write msr %x failed\n", msr);
 		return -EIO;
 	}
 	return 0;
-/*	int err;
-	asm volatile("2: wrmsr ; xor %[err],%[err]\n"
-		     "1:\n\t"
-		     //".section .fixup,\"ax\"\n\t"
-		     "3:  mov %[fault],%[err] ; jmp 1b\n\t"
-		     //".previous\n\t"
-		     //_ASM_EXTABLE(2b, 3b)
-		     : [err] "=a" (err)
-		     : "c" (msr), "0" (low), "d" (high),
-		       [fault] "i" (-EIO)
-		     : "memory");
-	return err;*/
 }
 
 #define vmmr0_native_write_msr_safe native_write_msr_safe

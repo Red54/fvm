@@ -289,9 +289,9 @@
 #define printk2(x, ...) 		DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, x, ##__VA_ARGS__)
 #define pr_err 					printk
 #define pr_debug 				printk
-#define pr_info_ratelimited 	printk
-#define pr_warn_ratelimited 	printk
-#define pr_debug_ratelimited	printk
+#define pr_info_ratelimited(x, ...) 	
+#define pr_warn_ratelimited(x, ...) 	
+#define pr_debug_ratelimited(x, ...)	
 
 #include "paging.h"
 #include "list.h"
