@@ -79,7 +79,6 @@ Enjoy!
 
 Known problems:
 	
-	1. do not use vmware vga card if the guest is Ubuntu 12.04, or the qemu (version 1.3 )will core.
+	1. do not use vmware vga card if the guest is Ubuntu 12.04, or the qemu (version 1.3 )will crash(1.7 is ok).
 	
-	2. The mouse auto switching while running linux guests (Ubuntu, etc.) can not work. And the qemu will lost 	response. Please use vnc to run Ubuntu.
 
