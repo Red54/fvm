@@ -21,8 +21,8 @@ INCLUDES = -I $(MINGW_INCLUDE_PATH) -I ./include -I ./include/asm -I ./include/l
 			 -I ./include-compat/asm -include ./include/os_interface.h
 
 CXX_ALL = $(CC) -c $(INCLUDES)
-CXX = $(CXX_ALL) -O1
-CXX_MMU = $(CXX_ALL) -Os
+CXX = $(CXX_ALL) -O3
+CXX_MMU = $(CXX_ALL) -O1
 
 COMMON_DEPEND = Makefile
 

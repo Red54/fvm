@@ -1284,9 +1284,11 @@ int vmmr0_vcpu_block(struct vmmr0_vcpu *vcpu)
 		{
 			break;
 		}
+		KeRaiseIrql(DISPATCH_LEVEL, &irql);
 		vmmr0_arch_vcpu_put(vcpu);
 		hardware_disable_nolock(0);
 		mutex_unlock(&__get_cpu_var(vmm_lock));
+		KeLowerIrql(PASSIVE_LEVEL);
 		KeRevertToUserAffinityThreadEx(__get_cpu_var(old_affinity));
 		if (STATUS_SUCCESS != KeWaitForSingleObject(vcpu->kick_event, Executive, KernelMode, FALSE, &expire))
 		{
